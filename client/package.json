@@ -1,5 +1,5 @@
 {
-  "name": "game-demo-client",
+  "name": "sawdemo-client",
   "version": "1.0.0",
   "description": "实时对战游戏前端",
   "scripts": {

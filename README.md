@@ -10,7 +10,7 @@
 
 1. 访问 [vercel.com](https://vercel.com) 注册（可用 GitHub 登录）
 2. 点 **Add New...** → **Project**
-3. 导入你的 GitHub 仓库 `game-demo`
+3. 导入你的 GitHub 仓库 `sawdemo`
 4. 配置：
    - **Framework Preset**: `Vite`
    - **Root Directory**: `client`
@@ -19,14 +19,14 @@
 5. 点 **Deploy**
 6. 等待 1-2 分钟，获得前端地址：
    ```
-   https://game-demo-xxx.vercel.app
+   https://sawdemo-xxx.vercel.app
    ```
 
 #### 方案 B：GitHub Pages（需公开仓库）
 
 1. 在 GitHub 仓库设置中启用 Pages
 2. Source 选择 `main` 分支 + `/docs` 目录
-3. 访问：`https://你的用户名.github.io/game-demo/`
+3. 访问：`https://你的用户名.github.io/sawdemo/`
 
 ---
 
@@ -36,7 +36,7 @@
 
 1. 访问 [render.com](https://render.com) 注册
 2. 点 **New +** → **Web Service**
-3. 连接 GitHub 仓库 `game-demo`
+3. 连接 GitHub 仓库 `sawdemo`
 4. 配置：
    - **Root Directory**: `server`
    - **Build Command**: `npm install`
@@ -45,7 +45,7 @@
 5. 点 **Create Web Service**
 6. 获得后端地址：
    ```
-   https://game-demo-xxx.onrender.com
+   https://sawdemo-xxx.onrender.com
    ```
 
 #### ⚙️ 重要：更新前端配置
@@ -99,7 +99,7 @@ npm run dev
 ## 📁 项目结构
 
 ```
-game-demo/
+sawdemo/
 ├── client/          # 前端源码（Phaser + Vite）
 │   ├── src/
 │   │   ├── config.js      # 后端服务器地址配置

@@ -1,5 +1,5 @@
 {
-  "name": "game-demo-server",
+  "name": "sawdemo-server",
   "version": "1.0.0",
   "description": "实时对战游戏服务器",
   "main": "index.js",
