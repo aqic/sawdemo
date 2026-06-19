@@ -5,6 +5,35 @@ const { Server } = require('socket.io')
 const app = express()
 const server = http.createServer(app)
 
+// 根路径友好提示
+app.get('/', (req, res) => {
+  res.send(`
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="UTF-8">
+      <title>游戏服务器运行中</title>
+      <style>
+        body { font-family: sans-serif; max-width: 600px; margin: 50px auto; padding: 20px; }
+        .status { color: green; font-size: 24px; }
+        .info { background: #f0f0f0; padding: 15px; border-radius: 8px; margin: 20px 0; }
+        code { background: #e0e0e0; padding: 2px 6px; border-radius: 4px; }
+      </style>
+    </head>
+    <body>
+      <h1>🎮 游戏服务器运行中</h1>
+      <p class="status">✅ WebSocket 服务正常</p>
+      <div class="info">
+        <p><strong>服务器地址：</strong><code>${req.protocol}://${req.get('host')}</code></p>
+        <p><strong>用途：</strong>仅用于 WebSocket 连接，不是游戏页面</p>
+        <p><strong>游戏页面：</strong>请访问前端部署地址</p>
+      </div>
+      <p>💡 游戏前端会通过 WebSocket 连接到此服务器</p>
+    </body>
+    </html>
+  `)
+})
+
 // 允许跨域（GitHub Pages 域名）
 const io = new Server(server, {
   cors: {
