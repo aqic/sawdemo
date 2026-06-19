@@ -5,46 +5,139 @@ const { Server } = require('socket.io')
 const app = express()
 const server = http.createServer(app)
 
-// 根路径友好提示
+// 根路径 - 友好提示页面
 app.get('/', (req, res) => {
   res.send(`
-    <!DOCTYPE html>
-    <html>
-    <head>
-      <meta charset="UTF-8">
-      <title>游戏服务器运行中</title>
-      <style>
-        body { font-family: sans-serif; max-width: 600px; margin: 50px auto; padding: 20px; }
-        .status { color: green; font-size: 24px; }
-        .info { background: #f0f0f0; padding: 15px; border-radius: 8px; margin: 20px 0; }
-        code { background: #e0e0e0; padding: 2px 6px; border-radius: 4px; }
-      </style>
-    </head>
-    <body>
-      <h1>🎮 游戏服务器运行中</h1>
-      <p class="status">✅ WebSocket 服务正常</p>
-      <div class="info">
-        <p><strong>服务器地址：</strong><code>${req.protocol}://${req.get('host')}</code></p>
-        <p><strong>用途：</strong>仅用于 WebSocket 连接，不是游戏页面</p>
-        <p><strong>游戏页面：</strong>请访问前端部署地址</p>
-      </div>
-      <p>💡 游戏前端会通过 WebSocket 连接到此服务器</p>
-    </body>
-    </html>
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>游戏服务器运行中</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { 
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; 
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .container {
+      background: rgba(255,255,255,0.05);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 16px;
+      padding: 40px;
+      max-width: 600px;
+      width: 100%;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+    }
+    h1 { 
+      color: #e94560; 
+      font-size: 32px; 
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .status { 
+      color: #2ecc71; 
+      font-size: 20px; 
+      margin: 20px 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .info { 
+      background: rgba(255,255,255,0.05); 
+      border-left: 4px solid #0984e3; 
+      padding: 20px; 
+      border-radius: 8px; 
+      margin: 24px 0;
+    }
+    .info p { 
+      color: #bdc3c7; 
+      margin: 12px 0;
+      line-height: 1.6;
+    }
+    .info strong { 
+      color: #ecf0f1; 
+    }
+    code { 
+      background: rgba(9,132,227,0.2); 
+      color: #74b9ff; 
+      padding: 3px 8px; 
+      border-radius: 4px; 
+      font-size: 14px;
+    }
+    .footer { 
+      color: #636e72; 
+      font-size: 14px; 
+      margin-top: 24px;
+      padding-top: 20px;
+      border-top: 1px solid rgba(255,255,255,0.1);
+    }
+    .pulse {
+      display: inline-block;
+      width: 12px;
+      height: 12px;
+      background: #2ecc71;
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(0.8); }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🎮 游戏服务器运行中</h1>
+    <div class="status">
+      <span class="pulse"></span>
+      <span>WebSocket 服务正常运行</span>
+    </div>
+    <div class="info">
+      <p><strong>📡 服务器地址：</strong></p>
+      <p style="text-align: center; margin: 12px 0;">
+        <code>${req.protocol}://${req.get('host')}</code>
+      </p>
+      <p><strong>🎯 用途：</strong>此地址仅用于 WebSocket 实时通信连接</p>
+      <p><strong>🎮 游戏页面：</strong>请访问前端部署地址（玩家在这里玩游戏）</p>
+    </div>
+    <div class="footer">
+      💡 游戏前端会通过 WebSocket 协议自动连接到此服务器<br>
+      ⚡ 实时对战延迟 &lt; 50ms
+    </div>
+  </div>
+</body>
+</html>
   `)
-})
-
-// 允许跨域（GitHub Pages 域名）
-const io = new Server(server, {
-  cors: {
-    origin: '*',
-    methods: ['GET', 'POST']
-  }
 })
 
 // 健康检查端点（Render 需要）
 app.get('/health', (req, res) => {
-  res.json({ status: 'ok', players: waitingQueue.length, rooms: rooms.size })
+  res.json({ 
+    status: 'ok', 
+    players: waitingQueue.length, 
+    rooms: rooms.size,
+    uptime: process.uptime()
+  })
+})
+
+// 允许跨域（支持所有来源）
+const io = new Server(server, {
+  cors: {
+    origin: '*',
+    methods: ['GET', 'POST'],
+    credentials: false
+  },
+  transports: ['websocket', 'polling'],
+  allowEIO3: true
 })
 
 // ===== 匹配系统 =====
@@ -52,7 +145,7 @@ const waitingQueue = []       // 等待匹配的玩家
 const rooms = new Map()       // roomId -> { players: [{id, x, y}], map }
 
 io.on('connection', (socket) => {
-  console.log(`玩家连接: ${socket.id}`)
+  console.log(`[连接] 玩家接入: ${socket.id}`)
 
   // —— 加入匹配队列 ——
   socket.on('join_match', (playerName) => {
@@ -89,11 +182,11 @@ io.on('connection', (socket) => {
         map: room.map
       })
 
-      console.log(`匹配成功: ${opponent.name} vs ${player.name} → ${roomId}`)
+      console.log(`[匹配] ${opponent.name} vs ${player.name} → ${roomId}`)
     } else {
       waitingQueue.push(player)
       socket.emit('waiting', { message: '等待对手加入...' })
-      console.log(`玩家 ${player.name} 进入等待队列`)
+      console.log(`[等待] 玩家 ${player.name} 进入队列`)
     }
   })
 
@@ -146,7 +239,7 @@ io.on('connection', (socket) => {
 
   // —— 断开连接 ——
   socket.on('disconnect', () => {
-    console.log(`玩家断开: ${socket.id}`)
+    console.log(`[断开] 玩家离开: ${socket.id}`)
     const idx = waitingQueue.findIndex(p => p.id === socket.id)
     if (idx !== -1) waitingQueue.splice(idx, 1)
 
@@ -179,5 +272,7 @@ function generateMap() {
 
 const PORT = process.env.PORT || 3001
 server.listen(PORT, () => {
-  console.log(`🎮 游戏服务器启动: 端口 ${PORT}`)
+  console.log(`🎮 游戏服务器启动成功`)
+  console.log(`📡 监听端口: ${PORT}`)
+  console.log(`🌐 环境变量 PORT: ${process.env.PORT || '(未设置，使用默认 3001)'}`)
 })

@@ -1,7 +1,7 @@
 import { defineConfig } from 'vite'
 
 export default defineConfig(({ mode }) => ({
-  base: mode === 'production' ? '/game-demo/' : '/',
+  base: mode === 'production' ? '/sawdemo/' : '/',
   server: {
     port: 5173,
     proxy: {

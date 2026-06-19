@@ -1,96 +1,147 @@
-# ⚔️ 实时对战网页游戏 Demo
+# 🎮 实时对战游戏 Demo
 
-古风实时对战 · 最小可运行版
+古风实时对战网页游戏 - 最小可运行版本
 
-## 🎮 功能
+## 🚀 快速部署指南
 
-- 玩家匹配、实时移动同步、攻击系统
-- 服务器端地图生成、血量计算
-- 前后端分离部署
+### 📦 前端部署（游戏页面）
 
-## 🏗️ 架构
+#### 方案 A：Vercel（推荐，免费）
 
-```
-client/    → GitHub Pages（静态前端）
-server/    → Render（Node.js + Socket.io 后端）
-docs/      → 前端构建产物（GitHub Pages 直接使用）
-```
+1. 访问 [vercel.com](https://vercel.com) 注册（可用 GitHub 登录）
+2. 点 **Add New...** → **Project**
+3. 导入你的 GitHub 仓库 `game-demo`
+4. 配置：
+   - **Framework Preset**: `Vite`
+   - **Root Directory**: `client`
+   - **Build Command**: `npm run build`
+   - **Output Directory**: `dist`
+5. 点 **Deploy**
+6. 等待 1-2 分钟，获得前端地址：
+   ```
+   https://game-demo-xxx.vercel.app
+   ```
 
-## 🚀 快速开始（本地开发）
+#### 方案 B：GitHub Pages（需公开仓库）
 
-```bash
-# 终端1 - 后端
-cd server && npm install && node index.js
-# → http://localhost:3001
-
-# 终端2 - 前端
-cd client && npm install && npx vite
-# → http://localhost:5173
-```
-
-用两个浏览器窗口打开 http://localhost:5173 即可自相对战。
+1. 在 GitHub 仓库设置中启用 Pages
+2. Source 选择 `main` 分支 + `/docs` 目录
+3. 访问：`https://你的用户名.github.io/game-demo/`
 
 ---
 
-## 🌐 部署到云端
+### 🔌 后端部署（WebSocket 服务器）
 
-### 第一步：把项目上传到 GitHub
+#### Render（免费）
 
-1. 打开 [github.com](https://github.com)，登录
-2. 点 **New repository** → 仓库名填 `game-demo` → 选 **Public** → 点 **Create**
-3. 创建后点页面上的 **uploading an existing file**
-4. 把本地 `game-demo/` 文件夹里的所有内容拖进去，提交
-
-### 第二步：部署前端到 GitHub Pages
-
-1. 进仓库 → **Settings** → 左侧点 **Pages**
-2. **Branch** 选 `main`，文件夹选 `/docs` → 点 **Save**
-3. 等 1~2 分钟，GitHub 会显示 `Your site is live at https://你的用户名.github.io/game-demo/`
-
-### 第三步：部署后端到 Render
-
-1. 打开 [render.com](https://render.com)，用 GitHub 注册登录
-2. 点 **New +** → **Web Service** → 连接你的 GitHub 仓库
-3. 配置：
-   - **Name**: 任意（如 `game-server`）
+1. 访问 [render.com](https://render.com) 注册
+2. 点 **New +** → **Web Service**
+3. 连接 GitHub 仓库 `game-demo`
+4. 配置：
    - **Root Directory**: `server`
-   - **Environment**: `Node`
    - **Build Command**: `npm install`
    - **Start Command**: `node index.js`
-4. 点 **Create Web Service**，等 3~5 分钟
-5. 拿到地址：`https://game-server-xxxx.onrender.com`（记下来！）
+   - **Instance Type**: Free
+5. 点 **Create Web Service**
+6. 获得后端地址：
+   ```
+   https://game-demo-xxx.onrender.com
+   ```
 
-### 第四步：对接前后端
+#### ⚙️ 重要：更新前端配置
 
-1. 在 GitHub 上打开 `docs/assets/index-xxxxxxxx.js` 文件
-2. 搜索 `YOUR_RENDER_APP.onrender.com`
-3. 点编辑，替换成你的 Render 地址
-4. 提交 → GitHub Pages 会自动更新（等 1 分钟）
+部署后端后，需要更新前端配置：
 
-或者更简单：**直接改源码再重新构建上传**：
-
-1. 编辑 `client/src/config.js`，把 `YOUR_RENDER_APP.onrender.com` 改成你的 Render 地址
-2. 在项目根目录运行：`cd client && npm run build && cp -r dist ../docs`
-3. 把更新后的 `docs/` 和 `client/src/config.js` 上传到 GitHub
-
-### 第五步：测试
-
-1. 打开 `https://你的用户名.github.io/game-demo/`
-2. 用两个浏览器窗口测试对战
-3. 把链接发给朋友！
+1. 编辑 `client/src/config.js`
+2. 把第 7 行改成你的 Render 地址：
+   ```javascript
+   : 'https://你的后端地址.onrender.com'
+   ```
+3. 重新构建前端：`cd client && npm run build`
+4. 把新生成的 `docs/` 目录推送到 GitHub
 
 ---
 
-## ⚠️ 注意事项
+## 🧪 本地测试
 
-- Render 免费层：15 分钟无连接会休眠，下次有人访问需等 30 秒冷启动
-- 此时你的 GitHub Pages 前端会一直在线
-- 首次部署 Render 后，记得把 `client/src/config.js` 里的 `YOUR_RENDER_APP.onrender.com` 替换成真实地址
+### 启动后端
+```bash
+cd server
+node index.js
+```
 
-## 📡 Socket.io 事件通信
+### 启动前端
+```bash
+cd client
+npm install
+npm run dev
+```
 
-| 客户端 → 服务器 | 服务器 → 客户端 |
-|---|---|
-| `join_match` | `waiting` / `match_found` |
-| `player_move` | `opponent_move` |
-| `player_attack` | `attack_result` / `game_over` |
+### 测试游戏
+1. 打开 `http://localhost:5173/`
+2. 输入昵称，点"开始匹配"
+3. 打开另一个浏览器窗口（或手机）
+4. 也访问 `http://localhost:5173/`
+5. 输入不同昵称，点"开始匹配"
+6. 两个玩家会自动匹配并开始对战！
+
+---
+
+## 🎯 游戏操作
+
+| 操作 | 按键 |
+|------|------|
+| 移动 | 方向键 或 WASD |
+| 攻击 | 空格键 |
+
+---
+
+## 📁 项目结构
+
+```
+game-demo/
+├── client/          # 前端源码（Phaser + Vite）
+│   ├── src/
+│   │   ├── config.js      # 后端服务器地址配置
+│   │   ├── main.js        # 游戏入口
+│   │   └── scenes/
+│   │       └── GameScene.js  # 游戏主场景
+│   ├── vite.config.js
+│   └── package.json
+├── server/          # 后端源码（Node.js + Socket.io）
+│   ├── index.js      # 服务器主文件
+│   └── package.json
+├── docs/            # 前端构建产物（GitHub Pages 用）
+├── render.yaml       # Render 部署配置
+├── vercel.json      # Vercel 部署配置
+└── README.md
+```
+
+---
+
+## 🔧 常见问题
+
+### Q: 前端显示"服务器连接失败"？
+**A**: 检查后端是否正常运行，以及 `client/src/config.js` 中的地址是否正确。
+
+### Q: Render 后端休眠后第一次访问很慢？
+**A**: 免费层 15 分钟没人访问会休眠，唤醒需等待 30-60 秒，这是正常的。
+
+### Q: 两个玩家无法匹配？
+**A**: 确保两个玩家访问的是同一个前端地址，且后端正常运行。
+
+### Q: 游戏画面看不到或出现错乱？
+**A**: 按 F12 打开控制台，查看是否有红色错误信息，把错误信息发给我。
+
+---
+
+## 📧 联系支持
+
+如果遇到问题，请提供：
+1. 浏览器控制台的红色错误信息（按 F12 查看）
+2. Render 控制台的日志
+3. 具体的操作步骤和现象
+
+---
+
+**祝你游戏开发顺利！🎮**
