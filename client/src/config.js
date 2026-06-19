@@ -4,4 +4,4 @@
 const isLocal = window.location.hostname === 'localhost'
 export const SERVER_URL = isLocal
   ? 'http://localhost:3001'
-  : 'https://YOUR_RENDER_APP.onrender.com'  // ← 改成你的 Render 地址
+  : 'https://sawdemo.onrender.com'  // ← 改成你的 Render 地址
